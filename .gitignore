@@ -1,0 +1,16 @@
+# Supabase local config
+.branches/
+.temp/
+
+# Environment secrets — NUNCA subir al repo
+.env
+.env.local
+supabase/.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
