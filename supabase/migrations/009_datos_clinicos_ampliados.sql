@@ -38,7 +38,13 @@ ALTER TABLE datos_clinicos
   ));
 
 -- ── 2. Vista: último dato clínico por paciente (con IMC) ─────
-CREATE OR REPLACE VIEW ultimo_dato_clinico AS
+-- security_invoker=true → la vista respeta las RLS del usuario consultante,
+-- no las del creador. Requerido por el linter de seguridad de Supabase.
+DROP VIEW IF EXISTS ultimo_dato_clinico;
+
+CREATE VIEW ultimo_dato_clinico
+  WITH (security_invoker = true)
+AS
 SELECT DISTINCT ON (paciente_id)
   id,
   paciente_id,
