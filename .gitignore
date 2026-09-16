@@ -7,6 +7,16 @@
 .env.local
 supabase/.env
 
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
 # Logs
 *.log
 npm-debug.log*
