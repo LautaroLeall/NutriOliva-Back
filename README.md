@@ -21,9 +21,17 @@ Repositorio oficial de base de datos PostgreSQL, esquema multi-tenant, politicas
 
 ```text
 Backend/
+├── .github/workflows/ci.yml                         # Pipeline GitHub Actions CI (Contrato SQL, RLS, Edge Functions, UTF-8)
+├── package.json                                     # Scripts automatizados (npm test)
 ├── README.md
+├── tests/                                           # Suite de pruebas automatizadas del Backend
+│   ├── contract.test.mjs                            # Verifica las 17 migraciones, 10 tablas, columnas, vistas, triggers y buckets
+│   ├── security-rls.test.mjs                        # Audita RLS, hardening SECURITY DEFINER (search_path) y security_invoker
+│   ├── edge-functions.test.mjs                      # Audita las 4 Edge Functions y supabase/config.toml
+│   └── encoding.test.mjs                            # Garantiza codificacion UTF-8 limpia (0 mojibake)
 └── supabase/
-    ├── functions/                                     # 4 Supabase Edge Functions (Deno / TypeScript)
+    ├── config.toml                                  # Configuracion declarativa de Supabase (Auth, Redirects y Edge Functions)
+    ├── functions/                                   # 4 Supabase Edge Functions (Deno / TypeScript)
     │   ├── deno.json                                  # Configuracion del runtime Deno
     │   ├── create-nutricionista/index.ts              # Alta segura de nutricionistas (solo superadmin)
     │   ├── invite-patient/index.ts                    # Invitacion, re-invitacion o recovery de pacientes
@@ -163,3 +171,19 @@ npx supabase functions deploy parse-pdf
 ```
 
 > **Nota sobre Supabase Auth Redirect URLs**: Asegurarse de incluir `http://localhost:5173/set-password` (desarrollo) y `https://tu-dominio-produccion.com/set-password` (produccion) dentro de **Authentication -> URL Configuration -> Redirect URLs** en el Dashboard de Supabase.
+
+---
+
+## 7. Pruebas Automatizadas y CI (`npm test`)
+
+El repositorio cuenta con una suite de verificacion automatizada (ejecutada tambien en cada push mediante `.github/workflows/ci.yml`):
+
+```bash
+cd Backend
+npm test
+```
+
+- **`tests/contract.test.mjs`**: Verifica las 17 migraciones, las 10 tablas, las 18 columnas clave, las 2 vistas SQL, los 3 triggers y los 2 buckets de Storage.
+- **`tests/security-rls.test.mjs`**: Audita que las 10 tablas tengan RLS activo, que las funciones `SECURITY DEFINER` fijen `SET search_path = ''` con permisos revocados a `anon`/`public` y que las vistas usen `security_invoker = true`.
+- **`tests/edge-functions.test.mjs`**: Audita la logica de seguridad, variables `SITE_URL` / `ANTHROPIC_API_KEY`, ausencia de secretos embebidos y configuracion en `supabase/config.toml`.
+- **`tests/encoding.test.mjs`**: Verifica 0 errores de codificacion UTF-8 en todos los archivos `.sql`, `.ts`, `.toml` y `.json`.
