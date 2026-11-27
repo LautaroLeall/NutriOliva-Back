@@ -1,0 +1,10 @@
+{
+  "name": "nutrioliva-backend",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Migraciones SQL, politicas RLS, Storage y Edge Functions de NutriOliva",
+  "scripts": {
+    "test": "node tests/contract.test.mjs && node tests/security-rls.test.mjs && node tests/edge-functions.test.mjs && node tests/encoding.test.mjs"
+  }
+}
